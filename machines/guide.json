@@ -1,0 +1,72 @@
+{
+	// Name of the Turing machine
+    "name" : "machine_name",
+
+	// List of symbols in the alphabet
+    "alphabet": [ "symbol1", "symbol2", "symbolN" ],
+
+	// Symbol representing the blank (empty) on the tape
+    "blank" : "blank_symbol",
+
+	// List of possible states of the machine
+    "states" : [ "state1", "state2", "stateN" ],
+
+	// Initial state of the machine, must be in states
+    "initial" : "initial_state", 
+
+	// List of final (accepting) states of the machine, must be in states
+    "finals" : [ "final_state1", "final_stateN" ],
+
+	// Transitions between states
+    "transitions" : {
+		// Transitions from state1
+        "state1": [ 
+            {
+				// Symbol read on the tape
+                "read" : "read_symbol1",
+				// State to transition to
+                "to_state": "next_state1",
+				// Symbol to write on the tape
+                "write": "write_symbol1",
+				// Action to perform, "LEFT" for left, "RIGHT" for right, or "STAY" for stay
+                "action": "DIRECTION1"
+            },
+            {
+                "read" : "read_symbolN",
+                "to_state": "next_stateN",
+                "write": "write_symbolN",
+                "action": "DIRECTIONN"
+            }
+        ],
+        
+        "state2": [
+            { 
+                "read" : "read_symbol1", 
+                "to_state": "next_state1", 
+                "write": "write_symbol1", 
+                "action": "DIRECTION1" 
+            },
+            {
+                "read" : "read_symbolN",
+                "to_state": "next_stateN",
+                "write": "write_symbolN",
+                "action": "DIRECTIONN"
+            }
+        ],
+
+        "stateN": [
+            { 
+                "read" : "read_symbol1", 
+                "to_state": "next_state1", 
+                "write": "write_symbol1", 
+                "action": "DIRECTION1" 
+            },
+            {
+                "read" : "read_symbolN",
+                "to_state": "next_stateN",
+                "write": "write_symbolN",
+                "action": "DIRECTIONN"
+            }
+        ]
+    }
+}
