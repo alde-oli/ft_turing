@@ -101,7 +101,7 @@ def print_machine(config: dict) -> None:
 			write = transition['write']
 			action = transition['action']
 			read = transition['read']
-			transitions_str += f"({init_state}, {read}) -> ({to_state}, {write}, {action})\n"
+			transitions_str += f"({init_state}, {read}){' ' * (10 - len(init_state))} -> ({to_state}, {write}, {action})\n"
 
 	print(f"""Alphabet:       {config['alphabet']}
 States:         {config['states']}
@@ -116,7 +116,7 @@ def	print_current(tape: list, rd_index: int, state: str, transition: dict, blank
 	print_len: int		= 30
 	tape_str: str		= ''.join(tape)
 	tape_print			= ''.join(tape)[:print_len] if len(tape) >= print_len else ''.join(tape) + blank * (print_len - len(tape))
-	transition_print	= f"({state}, {tape[rd_index]}) -> ({transition['to_state']}, {transition['write']}, {transition['action']})"
+	transition_print	= f"({state}, {tape[rd_index]}){' ' * (10 - len(state))} -> ({transition['to_state']}, {transition['write']}, {transition['action']})"
 
 	print(f"[{tape_print[:rd_index] + '<' + tape_print[rd_index] + '>' + tape_print[rd_index + 1:]}] {transition_print}")
 
