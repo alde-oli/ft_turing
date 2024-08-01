@@ -23,12 +23,15 @@ def init_transitions(params: dict) -> dict:
 
 # check only  component required are present and none are missing
 def	validate_components(config: dict) -> bool:
-	return set(config.keys()) == ["name", "alphabet", "blank", "states", "initial", "finals", "transitions"]
+	ret = set(config.keys()) == {"name", "alphabet", "blank", "states", "initial", "finals", "transitions"}
+	if not ret:
+		print("error in validate_components")
+	return ret
 
 
 # ensure every member is a single character and there are no duplicates
 def validate_alphabet(alphabet: list) -> bool:
-	return (
+	ret = (
 		all(
 			isinstance(letter, str)
 			and len(letter) == 1
@@ -36,22 +39,31 @@ def validate_alphabet(alphabet: list) -> bool:
 		) and
 		len(alphabet) == len(set(alphabet))
 	)
+	if not ret:
+		print("error in validate_alphabet")
+	return ret
 
 
 # ensure there are no duplicates
 def validate_states(states: list) -> bool:
-	return len(states) == len(set(states))
+	ret = len(states) == len(set(states))
+	if not ret:
+		print("error in validate_states")
+	return ret
 
 
 # ensure final states are in the states list and there are no duplicates
 def validate_finals(states: list, finals: list) -> bool:
-	return (
+	ret = (
 		all(
 			final in states
 			for final in finals
 		) and
 		len(finals) == len(set(finals))
 	)
+	if not ret:
+		print("error in validate_finals")
+	return ret
 
 
 # ensure every transition is well defined  with :
@@ -62,6 +74,7 @@ def	validate_transitions(config: dict) -> bool:
 
 	for from_state in transitions:
 		if from_state in config["finals"]:
+			print("error in validate_transitions")
 			return False
 		for transition in transitions[from_state]:
 			if (
@@ -72,15 +85,14 @@ def	validate_transitions(config: dict) -> bool:
 				transition["write"] not in config["alphabet"] or
 				transition["action"] not in {"LEFT", "RIGHT", "STAY"}
 			):
+				print("error in validate_transitions")
 				return False
 	return True
 
 
-
-
 # run every checking function
 def validate_machine(config: dict) -> bool:
-	return (
+	ret = (
 		validate_components(config) and
 		validate_alphabet(config["alphabet"]) and
 		config["blank"] in config["alphabet"] and
@@ -89,6 +101,9 @@ def validate_machine(config: dict) -> bool:
 		validate_finals(config["states"], config["finals"]) and
 		validate_transitions(config)
 	)
+	if not ret:
+		print("error in validate_machine")
+	return ret
 
 
 # print the machine configuration
@@ -116,7 +131,7 @@ def	print_current(tape: list, rd_index: int, state: str, transition: dict, blank
 	print_len: int		= 30
 	tape_str: str		= ''.join(tape)
 	tape_print			= ''.join(tape)[:print_len] if len(tape) >= print_len else ''.join(tape) + blank * (print_len - len(tape))
-	transition_print	= f"({state}, {tape[rd_index]}){' ' * (10 - len(state))} -> ({transition['to_state']}, {transition['write']}, {transition['action']})"
+	transition_print	= f"({state}, {tape[rd_index] if rd_index < len(tape) else blank}){' ' * (10 - len(state))} -> ({transition['to_state']}, {transition['write']}, {transition['action']})"
 
 	print(f"[{tape_print[:rd_index] + '<' + tape_print[rd_index] + '>' + tape_print[rd_index + 1:]}] {transition_print}")
 
@@ -131,14 +146,21 @@ def run(machine: dict, tape: list) -> None:
 	
 	while running:
 		if state in machine["finals"]:
+			print_current(tape, rd_index, state, transition, machine["blank"])
 			return
-		if not state in transitions or not tape[rd_index] in transitions[state]:
-			print(f"\n!! error: transition not found for state {state} and character {tape[rd_index]} !!\n")
+		if rd_index < 0:
+			print("\n!! error: trying to read negative index !!\n")
+			return
+		
+		if not state in transitions or not (tape[rd_index] if rd_index < len(tape) else machine["blank"]) in transitions[state]:
+			print(f"\n!! error: transition not found for state {state} and character {tape[rd_index] if rd_index < len(tape) else machine['blank']} !!\n")
 			exit(1)
 		
-		transition = transitions[state][tape[rd_index]]
+		transition = transitions[state][tape[rd_index] if rd_index < len(tape) else machine["blank"]]
 		print_current(tape, rd_index, state, transition, machine["blank"])
 
+		if rd_index >= len(tape):
+			tape.extend([machine['blank']] * (rd_index - len(tape) + 1))
 		tape[rd_index] = transition["write"]
 		state = transition["to_state"]
 		if transition["action"] == "LEFT":
@@ -146,7 +168,6 @@ def run(machine: dict, tape: list) -> None:
 		elif transition["action"] == "RIGHT":
 			rd_index += 1
 		
-
 
 # get args from launching command, parse the json config file, validate the machine and the tape, then run the main routine
 if __name__ == '__main__':
@@ -162,6 +183,7 @@ if __name__ == '__main__':
 	
 	if not validate_machine(machine):
 		print("invalid configuration")
+		exit(1)
 	
 	
 	print(f"""
@@ -177,5 +199,4 @@ if __name__ == '__main__':
 
 	machine["transitions"] = init_transitions(machine["transitions"])
 	run(machine, args[1])
-	
 	

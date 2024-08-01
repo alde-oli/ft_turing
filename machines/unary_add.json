@@ -1,0 +1,66 @@
+{
+	"name" : "unary_add",
+	"alphabet": [ "1", ".", "+", "=", "S" ],
+	"blank" : ".",
+	"states" : [ "START", "SCAN_R", "CHECK_END", "CHECK_ADD", "SCAN_L", "GET_EQ", "SHIFT_EQ", "CLR_EQ", "SUCCESS", "ERROR" ],
+	"initial" : "START",
+	"finals" : [ "SUCCESS", "ERROR" ],
+	"transitions" : {
+		"START": [
+			{ "read": "1", "to_state": "SCAN_R", "write": "S", "action": "RIGHT"},
+			{ "read": ".", "to_state": "ERROR", "write": ".", "action": "STAY"},
+			{ "read": "+", "to_state": "ERROR", "write": "+", "action": "STAY"},
+			{ "read": "=", "to_state": "ERROR", "write": "=", "action": "STAY"},
+			{ "read": "S", "to_state": "ERROR", "write": "S", "action": "STAY"}
+		],
+		"SCAN_R": [
+			{ "read": "1", "to_state": "SCAN_R", "write": "1", "action": "RIGHT"},
+			{ "read": ".", "to_state": "ERROR", "write": ".", "action": "STAY"},
+			{ "read": "+", "to_state": "CHECK_ADD", "write": "+", "action": "RIGHT"},
+			{ "read": "=", "to_state": "CHECK_END", "write": "=", "action": "RIGHT"},
+			{ "read": "S", "to_state": "ERROR", "write": "S", "action": "STAY"}
+		],
+		"CHECK_END": [
+			{ "read": "1", "to_state": "ERROR", "write": "1", "action": "STAY"},
+			{ "read": ".", "to_state": "SCAN_L", "write": ".", "action": "LEFT"},
+			{ "read": "+", "to_state": "ERROR", "write": "+", "action": "STAY"},
+			{ "read": "=", "to_state": "ERROR", "write": "=", "action": "STAY"},
+			{ "read": "S", "to_state": "ERROR", "write": "S", "action": "STAY"}
+		],
+		"CHECK_ADD": [
+			{ "read": "1", "to_state": "SCAN_R", "write": "1", "action": "RIGHT"},
+			{ "read": ".", "to_state": "ERROR", "write": ".", "action": "STAY"},
+			{ "read": "+", "to_state": "ERROR", "write": "+", "action": "STAY"},
+			{ "read": "=", "to_state": "ERROR", "write": "=", "action": "STAY"},
+			{ "read": "S", "to_state": "ERROR", "write": "S", "action": "STAY"}
+		],
+		"SCAN_L": [
+			{ "read": "1", "to_state": "SCAN_L", "write": "1", "action": "LEFT"},
+			{ "read": ".", "to_state": "ERROR", "write": ".", "action": "STAY"},
+			{ "read": "+", "to_state": "GET_EQ", "write": "1", "action": "RIGHT"},
+			{ "read": "=", "to_state": "SCAN_L", "write": "=", "action": "LEFT"},
+			{ "read": "S", "to_state": "CLR_EQ", "write": "1", "action": "RIGHT"}
+		],
+		"GET_EQ": [
+			{ "read": "1", "to_state": "GET_EQ", "write": "1", "action": "RIGHT"},
+			{ "read": ".", "to_state": "ERROR", "write": ".", "action": "STAY"},
+			{ "read": "+", "to_state": "ERROR", "write": "+", "action": "STAY"},
+			{ "read": "=", "to_state": "SHIFT_EQ", "write": ".", "action": "LEFT"},
+			{ "read": "S", "to_state": "ERROR", "write": "S", "action": "STAY"}
+		],
+		"SHIFT_EQ": [
+			{ "read": "1", "to_state": "SCAN_L", "write": "=", "action": "LEFT"},
+			{ "read": ".", "to_state": "ERROR", "write": ".", "action": "STAY"},
+			{ "read": "+", "to_state": "ERROR", "write": "+", "action": "STAY"},
+			{ "read": "=", "to_state": "ERROR", "write": "=", "action": "STAY"},
+			{ "read": "S", "to_state": "ERROR", "write": "S", "action": "STAY"}
+		],
+		"CLR_EQ": [
+			{ "read": "1", "to_state": "CLR_EQ", "write": "1", "action": "RIGHT"},
+			{ "read": ".", "to_state": "ERROR", "write": ".", "action": "STAY"},
+			{ "read": "+", "to_state": "ERROR", "write": "+", "action": "STAY"},
+			{ "read": "=", "to_state": "SUCCESS", "write": ".", "action": "STAY"},
+			{ "read": "S", "to_state": "ERROR", "write": "S", "action": "STAY"}
+		]
+	}
+}
